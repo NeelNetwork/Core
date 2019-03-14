@@ -111,18 +111,3 @@ class MarketplacePayload(object):
         close_offer = payload_pb2.TransactionPayload.CLOSE_OFFER
 
         return self._transaction.payload_type == close_offer
-
-    def send_payment(self):
-        """Returns the value set in send_payment.
-
-        Returns:
-            payload_pb2.CloseOffer
-        """
-
-        return self._transaction.send_payment
-
-    def is_send_payment(self):
-
-        send_payment = payload_pb2.TransactionPayload.SEND_PAYMENT
-
-        return self._transaction.payload_type == send_payment

@@ -207,9 +207,8 @@ def _create_offer_dict(body, public_key):
 
     offer = {k: body[k] for k in keys if body.get(k) is not None}
 
-    #FARZAD Change : accept zero sourceQuantity
-    # if offer['sourceQuantity'] < 1:
-    #     raise ApiBadRequest("sourceQuantity must be a positive integer")
+    if offer['sourceQuantity'] < 1:
+        raise ApiBadRequest("sourceQuantity must be a positive integer")
     if offer.get('targetQuantity') and offer['targetQuantity'] < 1:
         raise ApiBadRequest("targetQuantity must be a positive integer")
 

@@ -14,7 +14,7 @@
 # -----------------------------------------------------------------------------
 
 import logging
-import rethinkdb as re
+import rethinkdb as r
 
 
 LOGGER = logging.getLogger(__name__)
@@ -23,7 +23,6 @@ LOGGER = logging.getLogger(__name__)
 class Database(object):
     """Simple object for managing a connection to a rethink database
     """
-
     def __init__(self, host, port, name):
         self._host = host
         self._port = port
@@ -31,35 +30,30 @@ class Database(object):
         self._conn = None
 
     def connect(self):
-        r=re.RethinkDB()
         """Initializes a connection to the database
         """
         LOGGER.debug('Connecting to database: %s:%s', self._host, self._port)
         self._conn = r.connect(host=self._host, port=self._port)
 
     def disconnect(self):
-        r=re.RethinkDB()
         """Closes the connection to the database
         """
         LOGGER.debug('Disconnecting from database')
         self._conn.close()
 
     def fetch(self, table_name, primary_id):
-        r=re.RethinkDB()
         """Fetches a single resource by its primary id
         """
         return r.db(self._name).table(table_name)\
             .get(primary_id).run(self._conn)
 
     def insert(self, table_name, docs):
-        r=re.RethinkDB()
         """Inserts a document or a list of documents into the specified table
         in the database
         """
         return r.db(self._name).table(table_name).insert(docs).run(self._conn)
 
     def last_known_blocks(self, count):
-        r=re.RethinkDB()
         """Fetches the ids of the specified number of most recent blocks
         """
         cursor = r.db(self._name).table('blocks')\
@@ -70,7 +64,6 @@ class Database(object):
         return list(cursor)[-count:]
 
     def drop_fork(self, block_num):
-        r=re.RethinkDB()
         """Deletes all resources from a particular block_num
         """
         block_results = r.db(self._name).table('blocks')\
@@ -93,7 +86,6 @@ class Database(object):
         return {k: v + resource_results[k] for k, v in block_results.items()}
 
     def get_table(self, table_name):
-        r=re.RethinkDB()
         """Returns a rethink table query, which can be added to, and
         eventually run with run_query
         """

@@ -139,8 +139,8 @@ const isFormValid = state => {
   if (!state.offer.source) return false
   if (!state.offer.sourceQuantity) return false
   if (state.noTarget) return true
-  // FARZAD Change : accept zero targetQuantity
-  // if (!state.offer.targetQuantity) return false
+
+  if (!state.offer.targetQuantity) return false
   if (state.hasNewHolding && !state.holding.asset) return false
   if (!state.hasNewHolding && !state.offer.target) return false
 

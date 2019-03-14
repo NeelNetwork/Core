@@ -34,8 +34,6 @@ from db import auth_query
 from marketplace_transaction import transaction_creation
 
 
-import asyncio
-
 ACCOUNTS_BP = Blueprint('accounts')
 
 
@@ -144,57 +142,6 @@ async def update_account_info(request):
             'authorization': new_token,
             'account': updated_auth_info
         })
-
-@ACCOUNTS_BP.post('accounts/transfer')
-@authorized()
-async def transfer_asset(request):
-    """Updates auth information for the authorized account"""
-    token = common.deserialize_auth_token(
-        request.app.config.SECRET_KEY, request.token)
-
-    signer = await common.get_signer(request)
-    await asyncio.sleep(2.0)  # Mitigate race condition
-
-
-    required_fields = ['targetID', 'assetName', 'amount']
-    common.validate_fields(required_fields, request.json)
-
-
-    targetID = request.json.get('targetID')
-    assetName = request.json.get('assetName')
-    amount = request.json.get('amount')
-
-    return transaction_creation.send_payment(signer, request.app.config.SIGNER ,signer.get_public_key().as_hex(), targetID, assetName, amount)
-
-    # update = {}
-    # if request.json.get('password'):
-    #     update['hashed_password'] = bcrypt.hashpw(
-    #         bytes(request.json.get('password'), 'utf-8'), bcrypt.gensalt())
-    # if request.json.get('email'):
-    #     update['email'] = request.json.get('email')
-
-    # if update:
-    #     updated_auth_info = await auth_query.update_auth_info(
-    #         request.app.config.DB_CONN,
-    #         token.get('email'),
-    #         token.get('public_key'),
-    #         update)
-    #     new_token = common.generate_auth_token(
-    #         request.app.config.SECRET_KEY,
-    #         updated_auth_info.get('email'),
-    #         updated_auth_info.get('publicKey'))
-    # else:
-    #     updated_auth_info = await accounts_query.fetch_account_resource(
-    #         request.app.config.DB_CONN,
-    #         token.get('public_key'),
-    #         token.get('public_key'))
-    #     new_token = request.token
-
-    # return response.json(
-    #     {
-    #         'authorization': new_token,
-    #         'account': updated_auth_info
-    #     })
 
 
 def _create_account_dict(body, public_key):

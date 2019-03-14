@@ -19,6 +19,7 @@ from marketplace_processor.offer.accept_calc import AcceptOfferCalculator
 from marketplace_processor.protobuf import offer_pb2
 from marketplace_processor.protobuf import rule_pb2
 
+
 def handle_accept_offer(accept_offer, header, state):
     """Handle Offer acceptance.
 

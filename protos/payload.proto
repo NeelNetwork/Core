@@ -20,7 +20,6 @@ import "rule.proto";
 message TransactionPayload {
 
     enum PayloadType {
-
         TYPE_UNSET = 0;
         CREATE_ACCOUNT = 2;
         CREATE_ASSET = 3;
@@ -28,9 +27,6 @@ message TransactionPayload {
         CREATE_OFFER = 5;
         ACCEPT_OFFER = 10;
         CLOSE_OFFER = 11;
-
-        SEND_PAYMENT = 6;
-
     }
 
     PayloadType payload_type = 1;
@@ -41,8 +37,6 @@ message TransactionPayload {
     CreateOffer create_offer = 5;
     AcceptOffer accept_offer = 10;
     CloseOffer close_offer = 11;
-
-    SendPayment send_payment = 6;
 }
 
 message CreateAccount {
@@ -84,14 +78,4 @@ message AcceptOffer {
 
 message CloseOffer {
     string id = 1;
-}
-
-
-message SendPayment {
-
-    string source_customer_id = 1;
-    string dest_customer_id = 2;
-    string asset = 3;
-    uint64 amount = 4;
-
 }

@@ -56,10 +56,12 @@ DEFAULT_CONFIG = {
     'AES_KEY': None,
     'BATCHER_PRIVATE_KEY': None
 }
-r=re.RethinkDB()
+
+
+r = re.RethinkDB()
+
 
 async def open_connections(app):
-    
     LOGGER.warning('opening database connection')
     r.set_loop_type('asyncio')
     app.config.DB_CONN = await r.connect(

@@ -22,6 +22,9 @@ import rethinkdb as re
 from rethinkdb.errors import RqlRuntimeError
 
 
+r = re.RethinkDB()
+
+
 def parse_args(args):
     parser = argparse.ArgumentParser()
     parser.add_argument('--host',
@@ -37,7 +40,6 @@ def parse_args(args):
 
 
 def setup_db(host, port, name):
-    r = re.RethinkDB()
     conn = r.connect(host=host, port=port)
     print('Connection opened')
     try:

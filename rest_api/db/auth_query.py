@@ -19,7 +19,9 @@ import rethinkdb as re
 
 from api.errors import ApiBadRequest
 
-r=re.RethinkDB()
+
+r = re.RethinkDB()
+
 
 LOGGER = logging.getLogger(__name__)
 
