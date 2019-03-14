@@ -128,6 +128,7 @@ const submitter = (state, onDone) => () => {
       }
       if (state.acceptance.out) acceptance.source = state.acceptance.out
       if (holding) acceptance.target = holding.id
+      console.log(acceptance)
       return api.patch(`offers/${state.offer.id}/accept`, acceptance)
     })
     .then(onDone)
