@@ -14,7 +14,7 @@
 # ------------------------------------------------------------------------------
 
 import rethinkdb as re
-from rethinkdb import ReqlNonExistenceError
+from rethinkdb.errors import ReqlNonExistenceError
 
 from api.errors import ApiInternalError
 
