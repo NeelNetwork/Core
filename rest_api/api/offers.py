@@ -124,7 +124,7 @@ async def accept_offer(request, offer_id):
         batches)
 
     await messaging.check_batch_status(request.app.config.VAL_CONN, batch_id)
-
+    print("request.json['count']   ===================================> "+request.json['target'])
     return response.json('')
 
 
