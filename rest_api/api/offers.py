@@ -111,6 +111,10 @@ async def accept_offer(request, offer_id):
     required_fields = ['count', 'target']
     common.validate_fields(required_fields, request.json)
 
+    #FRZD
+    print("request.json ==>  " ,request.json )
+
+    
     offer = await offers_query.fetch_offer_resource(
         request.app.config.DB_CONN, offer_id)
 
@@ -135,7 +139,7 @@ async def accept_offer(request, offer_id):
         batches)
 
     await messaging.check_batch_status(request.app.config.VAL_CONN, batch_id)
-    print("request.json['count']  = ==================================> "+request.json['target'])
+    # print("request.json['count']  = ==================================> "+request.json['target'])
     return response.json('')
 
 
