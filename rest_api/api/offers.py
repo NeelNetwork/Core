@@ -40,15 +40,26 @@ async def create_offer(request):
     required_fields = ['source', 'sourceQuantity']
     common.validate_fields(required_fields, request.json)
 
+    #FRZD
+    print("request.json ==>  " ,request.json )
+
     signer = await common.get_signer(request)
 
     await asyncio.sleep(2.0)  # Mitigate race condition
     offer = _create_offer_dict(request.json, signer.get_public_key().as_hex())
 
+    #FRZD
+    print("_create_offer_dict ==>  " ,offer )
+
     offer_holdings = await _create_holdings_dict(
         request.app.config.DB_CONN, offer)
+    #FRZD
+    print("_create_holdings_dict ==>  " ,offer_holdings )
 
     source, target = _create_marketplace_holdings(offer, offer_holdings)
+    #FRZD
+    print("_create_marketplace_holdings ==>  source = " ,source , "target = ",target )
+
 
     batches, batch_id = transaction_creation.create_offer(
         txn_key=signer,
@@ -124,7 +135,7 @@ async def accept_offer(request, offer_id):
         batches)
 
     await messaging.check_batch_status(request.app.config.VAL_CONN, batch_id)
-    print("request.json['count']   ===================================> "+request.json['target'])
+    print("request.json['count']  = ==================================> "+request.json['target'])
     return response.json('')
 
 
