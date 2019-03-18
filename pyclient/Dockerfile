@@ -71,9 +71,9 @@ RUN echo "deb http://repo.sawtooth.me/ubuntu/ci xenial universe" >> /etc/apt/sou
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /project/simplewallet/pyclient
+WORKDIR /project/sawtooth-marketplace/pyclient
 
-ENV PATH "$PATH:/project/simplewallet/pyclient"
+ENV PATH "$PATH:/project/sawtooth-marketplace/pyclient"
 
 EXPOSE 3000
 

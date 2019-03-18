@@ -29,7 +29,7 @@ services:
     depends_on:
       - validator
     volumes:
-      - '.:/project/simplewallet/'
+      - '.:/project/sawtooth-marketplace/'
 
   simplewallet-client:
     container_name: simplewallet-client
@@ -45,7 +45,7 @@ services:
       - 'https_proxy=${https_proxy}'
       - 'no_proxy=rest-api,validator,${no_proxy}'
     volumes:
-      - '.:/project/simplewallet/'
+      - '.:/project/sawtooth-marketplace/'
     ports:
       - '0.0.0.0:3000:3000'
     depends_on:

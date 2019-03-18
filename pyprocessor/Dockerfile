@@ -29,7 +29,7 @@ RUN \
 
 EXPOSE 4004/tcp
 
-WORKDIR /project/simplewallet/pyprocessor
-ENV PATH "$PATH:/project/simplewallet/pyprocessor"
+WORKDIR /project/sawtooth-marketplace/pyprocessor
+ENV PATH "$PATH:/project/sawtooth-marketplace/pyprocessor"
 
 CMD bash -c './simplewallet-tp'
