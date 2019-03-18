@@ -33,7 +33,7 @@ from wallet.simplewallet_client import SimpleWalletClient
 
 DISTRIBUTION_NAME = 'simplewallet'
 
-DEFAULT_URL = 'tcp://rest-api:8008'
+DEFAULT_URL = 'http://127.0.0.1:8043'
 
 def create_console_handler(verbose_level):
     clog = logging.StreamHandler()
