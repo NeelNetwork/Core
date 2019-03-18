@@ -16,6 +16,44 @@
 version: '2.1'
 
 services:
+  
+  simplewallet-processor:
+    container_name: simplewallet-processor
+    build:
+      context: .
+      dockerfile: ./pyprocessor/Dockerfile
+      args:
+        - http_proxy
+        - https_proxy
+        - no_proxy
+    depends_on:
+      - validator
+    volumes:
+      - '.:/project/simplewallet/'
+
+  simplewallet-client:
+    container_name: simplewallet-client
+    build:
+      context: .
+      dockerfile: ./pyclient/Dockerfile
+      args:
+        - http_proxy
+        - https_proxy
+        - no_proxy
+    environment:
+      - 'http_proxy=${http_proxy}'
+      - 'https_proxy=${https_proxy}'
+      - 'no_proxy=rest-api,validator,${no_proxy}'
+    volumes:
+      - '.:/project/simplewallet/'
+    ports:
+      - '0.0.0.0:3000:3000'
+    depends_on:
+      - sawtooth-rest-api
+    entrypoint: "bash -c \"sawtooth keygen --force sawtooth && tail -f /dev/null\""
+    stop_signal: SIGKILL
+
+
   market-shell:
     build:
       context: .
