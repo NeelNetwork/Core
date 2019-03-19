@@ -150,6 +150,15 @@ services:
           --validator tcp://validator:4004
       "
 
+  rethink:
+    image: rethinkdb:2.3
+    container_name: rethink-db
+    expose:
+      - 8080
+      - 28015
+    ports:
+      - '8042:8080'
+      - '28042:28015'
 
   sawtooth-rest-api:
     image: hyperledger/sawtooth-rest-api:1.0
