@@ -1,6 +1,6 @@
 # Sawtooth Marketplace
 
-_Sawtooth Marketplace_ is a blockchain application built on Hyperledger
+_Neel Network_ is a blockchain application built on Hyperledger
 Sawtooth, allowing users to exchange quantities of customized "Assets" with
 other users on the blockchain. This repo contains a number of components which
 together with a _Hyperledger Sawtooth_ validator, will run a Sawtooth
@@ -231,4 +231,4 @@ bin/dev-tools -l
 ## License
 
 Hyperledger Sawtooth software is licensed under the
-[Apache License Version 2.0](LICENSE) software license.
+[MIT License](LICENSE) software license.
