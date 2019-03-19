@@ -15,8 +15,6 @@
 
 import bcrypt
 
-import json
-
 from itsdangerous import BadSignature
 
 from sanic import Blueprint
@@ -82,11 +80,11 @@ async def create_account(request):
 
     print('private_key', private_key)
     print('public_key', public_key)
-    return json.dumps(response.json(
+    return response.json(
         {
             'private_key': private_key,
             'public_key': public_key
-        }))
+        })
 
 
 @ACCOUNTS_BP.get('accounts')
