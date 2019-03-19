@@ -34,11 +34,12 @@ ASSETS_BP = Blueprint('assets')
 # @authorized()
 async def create_asset(request):
     """Creates a new Asset in state"""
-    required_fields = ['name' , 'public_key']
+    required_fields = ['name' , 'public_key' , 'private_key']
     common.validate_fields(required_fields, request.json)
 
     # signer = await common.get_signer(request)
     asset = _create_asset_dict(request.json, request.json['public_key'])
+    signer = CryptoFactory(request.app.config.CONTEXT).new_signer(request.json['private_key'])
 
     batches, batch_id = transaction_creation.create_asset(
         txn_key=signer,
