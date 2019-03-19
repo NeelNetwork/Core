@@ -21,7 +21,7 @@ services:
     container_name: simplewallet-processor
     build:
       context: .
-      dockerfile: ./pyprocessor/Dockerfile
+      dockerfile: ./processor/pyprocessor/Dockerfile
       args:
         - http_proxy
         - https_proxy
@@ -29,13 +29,13 @@ services:
     depends_on:
       - validator
     volumes:
-      - '.:/project/sawtooth-marketplace/'
+      - '.:/project/Core/'
 
   simplewallet-client:
     container_name: simplewallet-client
     build:
       context: .
-      dockerfile: ./pyclient/Dockerfile
+      dockerfile: ./transaction_creation/pyclient/Dockerfile
       args:
         - http_proxy
         - https_proxy
@@ -45,7 +45,7 @@ services:
       - 'https_proxy=${https_proxy}'
       - 'no_proxy=rest-api,validator,${no_proxy}'
     volumes:
-      - '.:/project/sawtooth-marketplace/'
+      - '.:/project/Core/'
     ports:
       - '0.0.0.0:3000:3000'
     depends_on:
@@ -53,28 +53,28 @@ services:
     entrypoint: "bash -c \"sawtooth keygen --force sawtooth && tail -f /dev/null\""
     stop_signal: SIGKILL
 
-
   market-shell:
-    build:
-      context: .
-      dockerfile: ./dev_env/Dockerfile
-      args:
-        - http_proxy
-        - https_proxy
-        - no_proxy
-    image: market-dev-env
-    container_name: market-shell
-    volumes:
-      - .:/project/sawtooth-marketplace
-      - /project/sawtooth-marketplace/sawbuck_app/node_modules
-    command: |
-      bash -c "
-        market-protogen &&
-        cd sawbuck_app/ &&
-        npm run build &&
-        cd ../ &&
-        tail -f /dev/null
-      "
+      build:
+        context: .
+        dockerfile: ./dev_env/Dockerfile
+        args:
+          - http_proxy
+          - https_proxy
+          - no_proxy
+      image: market-dev-env
+      container_name: market-shell
+      volumes:
+        - .:/project/sawtooth-marketplace
+        - /project/sawtooth-marketplace/sawbuck_app/node_modules
+      command: |
+        bash -c "
+          market-protogen &&
+          cd sawbuck_app/ &&
+          npm run build &&
+          cd ../ &&
+          tail -f /dev/null
+        "
+
 
   market-processor:
     build:
@@ -87,7 +87,7 @@ services:
     image: market-tp
     container_name: market-processor
     volumes:
-      - '.:/project/sawtooth-marketplace'
+      - '.:/project/Core'
     depends_on:
       - market-shell
     command: |
@@ -108,7 +108,7 @@ services:
     image: market-rest-api
     container_name: market-rest-api
     volumes:
-      - .:/project/sawtooth-marketplace
+      - .:/project/Core
     ports:
       - '8040:8000'
     depends_on:
@@ -136,7 +136,7 @@ services:
     image: market-ledger-sync
     container_name: market-ledger-sync
     volumes:
-      - .:/project/sawtooth-marketplace
+      - .:/project/Core
     depends_on:
       - market-shell
       - rethink
@@ -149,20 +149,6 @@ services:
           --db-host rethink \
           --validator tcp://validator:4004
       "
-
-  market-sawbuck-app:
-    build: ./sawbuck_app
-    image: market-sawbuck-app
-    container_name: market-sawbuck-app
-    volumes:
-      - ./sawbuck_app/public/:/usr/local/apache2/htdocs/
-    expose:
-      - 80
-    ports:
-      - '8041:80'
-    depends_on:
-      - market-shell
-      - market-rest-api
 
   rethink:
     image: rethinkdb:2.3
@@ -188,12 +174,14 @@ services:
         --connect tcp://validator:4004
         --bind sawtooth-rest-api:8008
 
+
+
   sawtooth-shell:
     image: hyperledger/sawtooth-shell:1.0
     container_name: sawtooth-shell
     volumes:
-      - '.:/project/sawtooth-marketplace'
-    working_dir: /project/sawtooth-marketplace
+      - '.:/project/Core'
+    working_dir: /project/Core
     container_name: sawtooth-shell
     depends_on:
       - sawtooth-rest-api
@@ -204,6 +192,8 @@ services:
         fi;
         tail -f /dev/null
       "
+
+
   settings-tp:
     image: hyperledger/sawtooth-settings-tp:1.0
     container_name: sawtooth-settings-tp
@@ -211,13 +201,16 @@ services:
       - validator
     command: settings-tp -vv --connect tcp://validator:4004
 
+
   validator:
     image: hyperledger/sawtooth-validator:1.0
     container_name: sawtooth-validator
     expose:
       - 4004
+      - 8800
     ports:
       - '4040:4004'
+      - '8800:8800'
     command: |
       bash -c "
         if [ ! -f /etc/sawtooth/keys/validator.priv ]; then
@@ -231,3 +224,26 @@ services:
           --bind component:tcp://eth0:4004 \
           --bind network:tcp://eth0:8800
       "
+
+  # poet-engine:
+  #   image: hyperledger/sawtooth-poet-engine:1.0
+  #   container_name: sawtooth-poet-engine
+  #   volumes:
+  #     - poet-shared:/poet-shared
+  #   command: "bash -c \"\
+  #       while [ ! -f /poet-shared/validator/keys/validator.priv ]; do sleep 1; done && \
+  #       cp -a /poet-shared/validator/keys /etc/sawtooth && \
+  #       poet-engine -C tcp://validator:5050 --component tcp://validator:4004 \
+  #   \""
+
+
+  # poet-validator-registry-tp:
+  #   image: hyperledger/sawtooth-poet-validator-registry-tp:1.0
+  #   container_name: sawtooth-poet-validator-registry-tp
+  #   expose:
+  #     - 4004
+  #   command: poet-validator-registry-tp -C tcp://validator:4004
+  #   environment:
+  #     PYTHONPATH: /project/sawtooth-core/consensus/poet/common
+  #   stop_signal: SIGKILL
+
