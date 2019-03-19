@@ -16,45 +16,8 @@
 version: '2.1'
 
 services:
-  
-  simplewallet-processor:
-    container_name: simplewallet-processor
-    build:
-      context: .
-      dockerfile: ./pyprocessor/Dockerfile
-      args:
-        - http_proxy
-        - https_proxy
-        - no_proxy
-    depends_on:
-      - validator
-    volumes:
-      - '.:/project/sawtooth-marketplace/'
 
-  simplewallet-client:
-    container_name: simplewallet-client
-    build:
-      context: .
-      dockerfile: ./pyclient/Dockerfile
-      args:
-        - http_proxy
-        - https_proxy
-        - no_proxy
-    environment:
-      - 'http_proxy=${http_proxy}'
-      - 'https_proxy=${https_proxy}'
-      - 'no_proxy=rest-api,validator,${no_proxy}'
-    volumes:
-      - '.:/project/sawtooth-marketplace/'
-    ports:
-      - '0.0.0.0:3000:3000'
-    depends_on:
-      - sawtooth-rest-api
-    entrypoint: "bash -c \"sawtooth keygen --force sawtooth && tail -f /dev/null\""
-    stop_signal: SIGKILL
-
-
-  market-shell:
+  neel-shell:
     build:
       context: .
       dockerfile: ./dev_env/Dockerfile
@@ -76,7 +39,7 @@ services:
         tail -f /dev/null
       "
 
-  market-processor:
+  neel-processor:
     build:
       context: .
       dockerfile: ./processor/Dockerfile
@@ -97,7 +60,7 @@ services:
           -C tcp://validator:4004
       "
 
-  market-rest-api:
+  neel-rest-api:
     build:
       context: .
       dockerfile: ./rest_api/Dockerfile
@@ -124,8 +87,8 @@ services:
           --db-host rethink \
           --validator tcp://validator:4004
       "
-
-  market-ledger-sync:
+      
+  neel-ledger-sync:
     build:
       context: .
       dockerfile: ./ledger_sync/Dockerfile
@@ -149,20 +112,6 @@ services:
           --db-host rethink \
           --validator tcp://validator:4004
       "
-
-  market-sawbuck-app:
-    build: ./sawbuck_app
-    image: market-sawbuck-app
-    container_name: market-sawbuck-app
-    volumes:
-      - ./sawbuck_app/public/:/usr/local/apache2/htdocs/
-    expose:
-      - 80
-    ports:
-      - '8041:80'
-    depends_on:
-      - market-shell
-      - market-rest-api
 
   rethink:
     image: rethinkdb:2.3
@@ -231,3 +180,23 @@ services:
           --bind component:tcp://eth0:4004 \
           --bind network:tcp://eth0:8800
       "
+  poet-engine:
+     image: hyperledger/sawtooth-poet-engine:1.0
+     container_name: sawtooth-poet-engine
+     volumes:
+       - poet-shared:/poet-shared
+     command: "bash -c \"\
+         while [ ! -f /poet-shared/validator/keys/validator.priv ]; do sleep 1; done && \
+         cp -a /poet-shared/validator/keys /etc/sawtooth && \
+         poet-engine -C tcp://validator:5050 --component tcp://validator:4004 \
+     \""
+  
+  poet-validator-registry-tp:
+     image: hyperledger/sawtooth-poet-validator-registry-tp:1.0
+     container_name: sawtooth-poet-validator-registry-tp
+     expose:
+       - 4004
+     command: poet-validator-registry-tp -C tcp://validator:4004
+     environment:
+       PYTHONPATH: /project/sawtooth-core/consensus/poet/common
+     stop_signal: SIGKILL
