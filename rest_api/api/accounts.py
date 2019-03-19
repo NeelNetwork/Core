@@ -37,7 +37,7 @@ from marketplace_transaction import transaction_creation
 ACCOUNTS_BP = Blueprint('accounts')
 
 
-@ACCOUNTS_BP.post('accounts/create')
+@ACCOUNTS_BP.get('accounts/create')
 async def create_account(request):
     """Creates a new Account and corresponding authorization token"""
     # required_fields = ['email', 'password']
