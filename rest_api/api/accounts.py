@@ -77,11 +77,11 @@ async def create_account(request):
     #     account.get('email'),
     #     public_key)
 
-    return response.json(
+    return json.dumps(response.json(
         {
             'private_key': private_key,
             'public_key': public_key
-        })
+        }))
 
 
 @ACCOUNTS_BP.get('accounts')
