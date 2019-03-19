@@ -23,6 +23,6 @@ RUN apt-get install -y -q python3-sawtooth-sdk
 
 WORKDIR /project/sawtooth-marketplace
 
-ENV PATH $PATH:/project/sawtooth-marketplace/bin
+ENV PATH $PATH:/project/Core/bin
 
 CMD ['marketplace-tp']
