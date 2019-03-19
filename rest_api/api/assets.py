@@ -31,14 +31,14 @@ ASSETS_BP = Blueprint('assets')
 
 
 @ASSETS_BP.post('assets')
-@authorized()
+# @authorized()
 async def create_asset(request):
     """Creates a new Asset in state"""
-    required_fields = ['name']
+    required_fields = ['name' , 'public_key']
     common.validate_fields(required_fields, request.json)
 
-    signer = await common.get_signer(request)
-    asset = _create_asset_dict(request.json, signer.get_public_key().as_hex())
+    # signer = await common.get_signer(request)
+    asset = _create_asset_dict(request.json, request.json['public_key'])
 
     batches, batch_id = transaction_creation.create_asset(
         txn_key=signer,
