@@ -15,6 +15,8 @@
 
 import bcrypt
 
+import json
+
 from itsdangerous import BadSignature
 
 from sanic import Blueprint
