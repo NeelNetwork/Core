@@ -230,5 +230,5 @@ bin/dev-tools -l
 
 ## License
 
-Hyperledger Sawtooth software is licensed under the
+Neel Core software is licensed under the
 [MIT License](LICENSE) software license.
