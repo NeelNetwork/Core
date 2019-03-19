@@ -88,19 +88,7 @@ services:
           --validator tcp://validator:4004
       "
 
-  market-sawbuck-app:
-    build:
-      context: ./sawbuck_app
-      dockerfile: ./Dockerfile-installed
-    image: market-sawbuck-app-installed
-    container_name: market-sawbuck-app-installed
-    expose:
-      - 80
-    ports:
-      - '8041:80'
-    depends_on:
-      - market-rest-api
-
+  
   rethink:
     image: rethinkdb:2.3
     container_name: rethink-installed
