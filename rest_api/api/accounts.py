@@ -37,50 +37,50 @@ from marketplace_transaction import transaction_creation
 ACCOUNTS_BP = Blueprint('accounts')
 
 
-@ACCOUNTS_BP.post('accounts')
+@ACCOUNTS_BP.post('accounts/create')
 async def create_account(request):
     """Creates a new Account and corresponding authorization token"""
-    required_fields = ['email', 'password']
-    common.validate_fields(required_fields, request.json)
+    # required_fields = ['email', 'password']
+    # common.validate_fields(required_fields, request.json)
 
     private_key = request.app.config.CONTEXT.new_random_private_key()
     signer = CryptoFactory(request.app.config.CONTEXT).new_signer(private_key)
     public_key = signer.get_public_key().as_hex()
 
-    auth_entry = _create_auth_dict(
-        request, public_key, private_key.as_hex())
-    await auth_query.create_auth_entry(request.app.config.DB_CONN, auth_entry)
+    # auth_entry = _create_auth_dict(
+    #     request, public_key, private_key.as_hex())
+    # await auth_query.create_auth_entry(request.app.config.DB_CONN, auth_entry)
 
-    account = _create_account_dict(request.json, public_key)
+    # account = _create_account_dict(request.json, public_key)
 
-    batches, batch_id = transaction_creation.create_account(
-        txn_key=signer,
-        batch_key=request.app.config.SIGNER,
-        label=account.get('label'),
-        description=account.get('description'))
+    # batches, batch_id = transaction_creation.create_account(
+    #     txn_key=signer,
+    #     batch_key=request.app.config.SIGNER,
+    #     label=account.get('label'),
+    #     description=account.get('description'))
 
-    await messaging.send(
-        request.app.config.VAL_CONN,
-        request.app.config.TIMEOUT,
-        batches)
+    # await messaging.send(
+    #     request.app.config.VAL_CONN,
+    #     request.app.config.TIMEOUT,
+    #     batches)
 
-    try:
-        await messaging.check_batch_status(
-            request.app.config.VAL_CONN, batch_id)
-    except (ApiBadRequest, ApiInternalError) as err:
-        await auth_query.remove_auth_entry(
-            request.app.config.DB_CONN, request.json.get('email'))
-        raise err
+    # try:
+    #     await messaging.check_batch_status(
+    #         request.app.config.VAL_CONN, batch_id)
+    # except (ApiBadRequest, ApiInternalError) as err:
+    #     await auth_query.remove_auth_entry(
+    #         request.app.config.DB_CONN, request.json.get('email'))
+    #     raise err
 
-    token = common.generate_auth_token(
-        request.app.config.SECRET_KEY,
-        account.get('email'),
-        public_key)
+    # token = common.generate_auth_token(
+    #     request.app.config.SECRET_KEY,
+    #     account.get('email'),
+    #     public_key)
 
     return response.json(
         {
-            'authorization': token,
-            'account': account
+            'private_key': private_key,
+            'public_key': public_key
         })
 
 
