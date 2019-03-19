@@ -45,9 +45,10 @@ async def create_account(request):
     # required_fields = ['email', 'password']
     # common.validate_fields(required_fields, request.json)
 
-    private_key = request.app.config.CONTEXT.new_random_private_key()
-    signer = CryptoFactory(request.app.config.CONTEXT).new_signer(private_key)
+    privateKey = request.app.config.CONTEXT.new_random_private_key()
+    signer = CryptoFactory(request.app.config.CONTEXT).new_signer(privateKey)
     public_key = signer.get_public_key().as_hex()
+    private_key = signer.get_public_key().as_hex()
 
     # auth_entry = _create_auth_dict(
     #     request, public_key, private_key.as_hex())
