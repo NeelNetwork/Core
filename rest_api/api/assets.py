@@ -17,7 +17,7 @@ from urllib.parse import unquote
 
 from sanic import Blueprint
 from sanic import response
-
+from sawtooth_signing import CryptoFactory
 from api.authorization import authorized
 from api import common
 from api import messaging
