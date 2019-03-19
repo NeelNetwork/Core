@@ -79,6 +79,8 @@ async def create_account(request):
     #     account.get('email'),
     #     public_key)
 
+    print('private_key', private_key)
+    print('public_key', public_key)
     return json.dumps(response.json(
         {
             'private_key': private_key,
