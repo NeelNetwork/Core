@@ -53,6 +53,28 @@ services:
     entrypoint: "bash -c \"sawtooth keygen --force sawtooth && tail -f /dev/null\""
     stop_signal: SIGKILL
 
+  market-shell:
+      build:
+        context: .
+        dockerfile: ./dev_env/Dockerfile
+        args:
+          - http_proxy
+          - https_proxy
+          - no_proxy
+      image: market-dev-env
+      container_name: market-shell
+      volumes:
+        - .:/project/sawtooth-marketplace
+        - /project/sawtooth-marketplace/sawbuck_app/node_modules
+      command: |
+        bash -c "
+          market-protogen &&
+          cd sawbuck_app/ &&
+          npm run build &&
+          cd ../ &&
+          tail -f /dev/null
+        "
+
 
   market-processor:
     build:

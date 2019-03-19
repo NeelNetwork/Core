@@ -37,21 +37,7 @@ class MarketplacePayload(object):
 
         return self._transaction.payload_type == create_account
 
-    def create_holding(self):
-        """Returns the value set in the create_holding.
-
-        Returns:
-            payload_pb2.CreateHolding
-        """
-
-        return self._transaction.create_holding
-
-    def is_create_holding(self):
-
-        create_holding = payload_pb2.TransactionPayload.CREATE_HOLDING
-
-        return self._transaction.payload_type == create_holding
-
+    
     def create_asset(self):
         """Returns the value set in the create_asset.
 
