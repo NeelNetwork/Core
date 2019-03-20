@@ -19,24 +19,27 @@
 #   SOFTWARE.
 #   --------------------------------------------------------------------------
 
-FROM ubuntu:16.04
 
-RUN echo "deb apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 8AA7AF1F1091A5FD" && \
-    echo 'deb http://repo.sawtooth.me/ubuntu/1.0/stable xenial universe' >> /etc/apt/sources.list && \
-    apt-get update && \
-    apt-get install -y --allow-unauthenticated -q python3-grpcio-tools=1.1.3-1 \
-        python3-pip \
-        python3-sawtooth-sdk
+class AcceptOfferCalculator(object):
 
-RUN pip3 install rethinkdb
+    def __init__(self, offer, count):
+        self._offer = offer
+        self._count = count
 
-WORKDIR /project/sawtooth-marketplace
+    def input_quantity(self):
+        """The Offerer Source Quantity, Also the Receiver Target Quantity.
 
-ENV PATH $PATH:/project/sawtooth-marketplace/bin
+        Returns:
+            (int): The quantity.
+        """
 
-# Note that the context must be set to the project's root directory
-COPY . .
+        return self._offer.source_quantity * self._count
 
-RUN market-protogen
+    def output_quantity(self):
+        """The Offerer Target Quantity, Also the Receiver Source Quantity.
 
-CMD ["marketplace-ledger-sync"]
+        Returns:
+            (int): The quantity.
+        """
+
+        return self._offer.target_quantity * self._count

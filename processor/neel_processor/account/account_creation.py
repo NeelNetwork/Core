@@ -19,24 +19,28 @@
 #   SOFTWARE.
 #   --------------------------------------------------------------------------
 
-FROM ubuntu:16.04
+from sawtooth_sdk.processor.exceptions import InvalidTransaction
 
-RUN echo "deb apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 8AA7AF1F1091A5FD" && \
-    echo 'deb http://repo.sawtooth.me/ubuntu/1.0/stable xenial universe' >> /etc/apt/sources.list && \
-    apt-get update && \
-    apt-get install -y --allow-unauthenticated -q python3-grpcio-tools=1.1.3-1 \
-        python3-pip \
-        python3-sawtooth-sdk
 
-RUN pip3 install rethinkdb
+def handle_account_creation(create_account, header, state):
+    """Handles creating an Account.
 
-WORKDIR /project/sawtooth-marketplace
+    Args:
+        create_account (CreateAccount): The transaction.
+        header (TransactionHeader): The header of the Transaction.
+        state (MarketplaceState): The wrapper around the Context.
 
-ENV PATH $PATH:/project/sawtooth-marketplace/bin
+    Raises:
+        InvalidTransaction
+            - The public key already exists for an Account.
+    """
 
-# Note that the context must be set to the project's root directory
-COPY . .
+    if state.get_account(public_key=header.signer_public_key):
+        raise InvalidTransaction("Account with public key {} already "
+                                 "exists".format(header.signer_public_key))
 
-RUN market-protogen
-
-CMD ["marketplace-ledger-sync"]
+    state.set_account(
+        public_key=header.signer_public_key,
+        label=create_account.label,
+        description=create_account.description,
+        holdings=[])

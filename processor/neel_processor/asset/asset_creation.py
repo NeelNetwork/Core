@@ -19,24 +19,34 @@
 #   SOFTWARE.
 #   --------------------------------------------------------------------------
 
-FROM ubuntu:16.04
+from sawtooth_sdk.processor.exceptions import InvalidTransaction
 
-RUN echo "deb apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 8AA7AF1F1091A5FD" && \
-    echo 'deb http://repo.sawtooth.me/ubuntu/1.0/stable xenial universe' >> /etc/apt/sources.list && \
-    apt-get update && \
-    apt-get install -y --allow-unauthenticated -q python3-grpcio-tools=1.1.3-1 \
-        python3-pip \
-        python3-sawtooth-sdk
 
-RUN pip3 install rethinkdb
+def handle_asset_creation(create_asset, header, state):
+    """Handles creating an Asset.
 
-WORKDIR /project/sawtooth-marketplace
+    Args:
+        create_asset (CreateAsset): The transaction.
+        header (TransactionHeader): The header of the Transaction.
+        state (MarketplaceState): The wrapper around the context.
 
-ENV PATH $PATH:/project/sawtooth-marketplace/bin
+    Raises:
+        InvalidTransaction
+            - The name already exists for an Asset.
+            - The txn signer has an account
+    """
 
-# Note that the context must be set to the project's root directory
-COPY . .
+    if not state.get_account(public_key=header.signer_public_key):
+        raise InvalidTransaction(
+            "Unable to create asset, signing key has no"
+            " Account: {}".format(header.signer_public_key))
 
-RUN market-protogen
+    if state.get_asset(name=create_asset.name):
+        raise InvalidTransaction(
+            "Asset already exists with Name {}".format(create_asset.name))
 
-CMD ["marketplace-ledger-sync"]
+    state.set_asset(
+        name=create_asset.name,
+        description=create_asset.description,
+        owners=[header.signer_public_key],
+        rules=create_asset.rules)
